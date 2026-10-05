@@ -1,0 +1,62 @@
+---
+interface FaqItem {
+  q: string;
+  a: string;
+}
+interface Props {
+  items: FaqItem[];
+}
+
+const { items } = Astro.props;
+---
+
+{items.length > 0 && (
+  <section class="faq">
+    <h2>Frequently asked questions</h2>
+    <dl class="faq-list">
+      {items.map((item) => (
+        <div class="faq-item">
+          <dt>{item.q}</dt>
+          <dd>{item.a}</dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+)}
+
+<style>
+  .faq {
+    margin: 3rem 0 2rem;
+    padding: 1.75rem;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+  .faq h2 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+  }
+  .faq-list {
+    margin: 0;
+    padding: 0;
+  }
+  .faq-item {
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .faq-item:last-child {
+    border-bottom: none;
+  }
+  .faq-item dt {
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 0.35rem;
+  }
+  .faq-item dd {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.96rem;
+    line-height: 1.55;
+  }
+</style>

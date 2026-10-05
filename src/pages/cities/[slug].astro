@@ -1,0 +1,50 @@
+---
+import { getCollection } from 'astro:content';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+
+export async function getStaticPaths() {
+  const cities = await getCollection('city');
+  return cities.map((c) => ({
+    params: { slug: c.slug },
+    props: { entry: c, allCities: cities.filter((x) => x.slug !== c.slug) },
+  }));
+}
+
+const { entry, allCities } = Astro.props;
+const { Content } = await entry.render();
+const { title, description, pubDate, updatedAt, region, heroImage, heroSubtitle, faq } =
+  entry.data;
+
+// Related: 2 other cities + the WeChat Pay guide (every nomad needs it)
+const related = [
+  ...allCities.slice(0, 2).map((c) => ({
+    title: c.data.title.replace('Digital Nomad Guide to ', ''),
+    description: c.data.description.slice(0, 100) + '…',
+    href: `/cities/${c.slug}`,
+    eyebrow: 'City',
+  })),
+  {
+    title: 'WeChat Pay for Foreigners',
+    description: 'How to pay everywhere locals do — without a Chinese bank card.',
+    href: '/guides/wechat-pay-foreigners',
+    eyebrow: 'Guide',
+  },
+];
+---
+
+<ArticleLayout
+  title={title}
+  description={description}
+  pubDate={pubDate}
+  updatedAt={updatedAt}
+  eyebrow={`City · ${region}`}
+  heroImage={heroImage}
+  heroSubtitle={heroSubtitle}
+  faq={faq}
+  related={related}
+  relatedTitle="Explore more cities"
+  showMap={true}
+  mapLabel={title.replace('Digital Nomad Guide to ', '')}
+>
+  <Content />
+</ArticleLayout>

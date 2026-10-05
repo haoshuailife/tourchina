@@ -34,8 +34,8 @@ jobs:
       - name: Build with Astro
         run: npm run build
         env:
-          # 自动构造 GitHub Pages 域名：<owner>.github.io
-          SITE: https://${{ github.repository_owner }}.github.io
+          # 自定义域名
+          SITE: https://chinanomadguide.com
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

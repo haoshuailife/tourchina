@@ -1,0 +1,86 @@
+---
+interface Props {
+  title: string;
+  subtitle?: string;
+  eyebrow?: string;
+  heroImage?: string;
+}
+
+const { title, subtitle, eyebrow, heroImage } = Astro.props;
+---
+
+<section class="hero" style={heroImage ? `background-image: url('${heroImage}'); background-size: cover; background-position: center;` : undefined}>
+  <div class="hero-overlay"></div>
+  <div class="hero-inner">
+    {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+    <h1>{title}</h1>
+    {subtitle && <p class="subtitle">{subtitle}</p>}
+  </div>
+  <div class="hero-decor" aria-hidden="true">
+    <svg viewBox="0 0 1200 100" preserveAspectRatio="none">
+      <path d="M0,40 Q300,80 600,40 T1200,40 L1200,100 L0,100 Z" fill="var(--bg)"/>
+    </svg>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 380px;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #2c3e50 0%, #4a6b7c 50%, #c8553d 100%);
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+    overflow: hidden;
+    padding: 4rem 1.5rem 3rem;
+  }
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.55) 100%);
+  }
+  .hero-inner {
+    position: relative;
+    z-index: 2;
+    max-width: 760px;
+    margin: 0 auto;
+    text-align: center;
+    width: 100%;
+  }
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.78rem;
+    color: #ffd9a3;
+    font-weight: 700;
+  }
+  .hero h1 {
+    margin: 0.6rem 0 0.75rem;
+    color: #fff;
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+  .subtitle {
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    color: rgba(255, 255, 255, 0.92);
+    margin: 0;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .hero-decor {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    z-index: 2;
+    line-height: 0;
+  }
+  .hero-decor svg {
+    width: 100%;
+    height: 60px;
+    display: block;
+  }
+</style>

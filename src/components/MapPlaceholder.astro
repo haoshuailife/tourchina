@@ -1,0 +1,76 @@
+---
+interface Props {
+  label?: string;
+  hint?: string;
+}
+
+const { label = 'Map', hint = 'Interactive map coming soon' } = Astro.props;
+---
+
+<div class="map-placeholder" role="img" aria-label={label}>
+  <div class="map-inner">
+    <svg class="map-pin" viewBox="0 0 24 24" width="48" height="48" aria-hidden="true">
+      <path
+        d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"
+        fill="currentColor"
+      />
+    </svg>
+    <span class="map-label">{label}</span>
+    <span class="map-hint">{hint}</span>
+  </div>
+</div>
+
+<style>
+  .map-placeholder {
+    margin: 2rem 0;
+    aspect-ratio: 16 / 9;
+    border-radius: 8px;
+    background:
+      repeating-linear-gradient(
+        45deg,
+        #eef0e9 0,
+        #eef0e9 12px,
+        #e7e9e2 12px,
+        #e7e9e2 24px
+      ),
+      linear-gradient(135deg, #e7e9e2, #d6d9cf);
+    background-blend-mode: multiply;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  .map-placeholder::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, transparent 49%, rgba(200, 85, 61, 0.08) 50%, transparent 51%),
+      linear-gradient(0deg, transparent 49%, rgba(200, 85, 61, 0.08) 50%, transparent 51%);
+    background-size: 80px 80px;
+  }
+  .map-inner {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    color: var(--ink-soft);
+  }
+  .map-pin {
+    color: var(--accent);
+    opacity: 0.85;
+  }
+  .map-label {
+    display: block;
+    margin-top: 0.5rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .map-hint {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-top: 0.25rem;
+  }
+</style>

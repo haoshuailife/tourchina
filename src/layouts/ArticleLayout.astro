@@ -1,0 +1,216 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import FAQ from '../components/FAQ.astro';
+import Related from '../components/Related.astro';
+import MapPlaceholder from '../components/MapPlaceholder.astro';
+import CTA from '../components/CTA.astro';
+
+interface FaqItem {
+  q: string;
+  a: string;
+}
+interface RelatedItem {
+  title: string;
+  description: string;
+  href: string;
+  eyebrow?: string;
+}
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  updatedAt?: Date;
+  eyebrow?: string;
+  category?: string;
+  affiliate?: { program: string; url: string };
+  heroImage?: string;
+  heroSubtitle?: string;
+  faq?: FaqItem[];
+  related?: RelatedItem[];
+  relatedTitle?: string;
+  showMap?: boolean;
+  mapLabel?: string;
+}
+
+const {
+  title,
+  description,
+  pubDate,
+  updatedAt,
+  eyebrow,
+  category,
+  affiliate,
+  heroImage,
+  heroSubtitle,
+  faq = [],
+  related = [],
+  relatedTitle,
+  showMap = false,
+  mapLabel,
+} = Astro.props;
+
+const site = Astro.site ?? new URL('https://haoshuailife.github.io');
+const canonical = new URL(Astro.url.pathname, site).href;
+
+const mainEntity = {
+  '@type': 'WebPage',
+  '@id': canonical,
+};
+
+// Article schema + optional FAQPage schema (combined as @graph)
+const graph: object[] = [
+  {
+    '@type': 'Article',
+    headline: title,
+    description,
+    datePublished: pubDate.toISOString(),
+    dateModified: (updatedAt ?? pubDate).toISOString(),
+    mainEntityOfPage: mainEntity,
+    author: { '@type': 'Organization', name: 'ChinaNomadGuide' },
+    publisher: { '@type': 'Organization', name: 'ChinaNomadGuide' },
+  },
+];
+
+if (faq.length > 0) {
+  graph.push({
+    '@type': 'FAQPage',
+    mainEntity: faq.map((item) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.a,
+      },
+    })),
+  });
+}
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': graph,
+};
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  type="article"
+  publishedTime={pubDate.toISOString()}
+  modifiedTime={(updatedAt ?? pubDate).toISOString()}
+  jsonLd={jsonLd}
+>
+  <Hero
+    title={title}
+    subtitle={heroSubtitle}
+    eyebrow={eyebrow ?? category}
+    heroImage={heroImage}
+  />
+
+  <article class="article container">
+    <p class="meta">
+      <time datetime={pubDate.toISOString()}>{fmt(pubDate)}</time>
+      {updatedAt && (
+        <span class="muted"> · Updated {fmt(updatedAt)}</span>
+      )}
+    </p>
+
+    <div class="prose">
+      <slot />
+    </div>
+
+    {showMap && <MapPlaceholder label={mapLabel} />}
+
+    {affiliate && <CTA program={affiliate.program} url={affiliate.url} />}
+
+    <FAQ items={faq} />
+
+    <Related items={related} title={relatedTitle} />
+  </article>
+</BaseLayout>
+
+<style>
+  .article {
+    max-width: 760px;
+    padding: 2rem 1.5rem 3rem;
+  }
+  .meta {
+    color: var(--muted);
+    font-size: 0.88rem;
+    margin: 0 0 1.5rem;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 1rem;
+  }
+  .prose :global(h2) {
+    margin-top: 2.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--line);
+  }
+  .prose :global(h2:first-of-type) {
+    border-top: none;
+    padding-top: 0;
+  }
+  .prose :global(h3) {
+    margin-top: 1.75rem;
+  }
+  .prose :global(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+  }
+  .prose :global(a) {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-color: rgba(200, 85, 61, 0.4);
+  }
+  .prose :global(a:hover) {
+    text-decoration-color: var(--accent);
+  }
+  .prose :global(ul),
+  .prose :global(ol) {
+    padding-left: 1.5rem;
+  }
+  .prose :global(li) {
+    margin-bottom: 0.4rem;
+  }
+  .prose :global(blockquote) {
+    border-left: 3px solid var(--accent);
+    margin: 1.5rem 0;
+    padding: 0.5rem 0 0.5rem 1rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border-radius: 0 4px 4px 0;
+  }
+  .prose :global(code) {
+    background: #efeee9;
+    padding: 0.15rem 0.35rem;
+    border-radius: 3px;
+    font-size: 0.9em;
+  }
+  .prose :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.92rem;
+  }
+  .prose :global(th),
+  .prose :global(td) {
+    border: 1px solid var(--line);
+    padding: 0.55rem 0.75rem;
+    text-align: left;
+  }
+  .prose :global(th) {
+    background: #efeee9;
+    font-weight: 600;
+  }
+  .prose :global(tr:nth-child(even) td) {
+    background: #faf9f5;
+  }
+</style>

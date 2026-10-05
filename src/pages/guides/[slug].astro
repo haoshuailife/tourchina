@@ -1,0 +1,66 @@
+---
+import { getCollection } from 'astro:content';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+
+export async function getStaticPaths() {
+  const guides = await getCollection('guide');
+  return guides.map((g) => ({
+    params: { slug: g.slug },
+    props: { entry: g, allGuides: guides.filter((x) => x.slug !== g.slug) },
+  }));
+}
+
+const { entry, allGuides } = Astro.props;
+const { Content } = await entry.render();
+const {
+  title,
+  description,
+  pubDate,
+  updatedAt,
+  category,
+  affiliate,
+  heroImage,
+  heroSubtitle,
+  faq,
+} = entry.data;
+
+const categoryLabel: Record<string, string> = {
+  connectivity: 'Connectivity',
+  payment: 'Payment',
+  visa: 'Visa & Entry',
+  safety: 'Safety',
+  other: 'Guide',
+};
+
+// Related: 2 other guides + a city link
+const related = [
+  ...allGuides.slice(0, 2).map((g) => ({
+    title: g.data.title,
+    description: g.data.description.slice(0, 100) + '…',
+    href: `/guides/${g.slug}`,
+    eyebrow: categoryLabel[g.data.category] ?? 'Guide',
+  })),
+  {
+    title: 'Digital Nomad Guide to Shenzhen',
+    description: "China's Silicon Valley — fast internet and a Hong Kong visa-run subway.",
+    href: '/cities/shenzhen',
+    eyebrow: 'City',
+  },
+];
+---
+
+<ArticleLayout
+  title={title}
+  description={description}
+  pubDate={pubDate}
+  updatedAt={updatedAt}
+  eyebrow={`Guide · ${categoryLabel[category] ?? category}`}
+  heroImage={heroImage}
+  heroSubtitle={heroSubtitle}
+  affiliate={affiliate}
+  faq={faq}
+  related={related}
+  relatedTitle="More practical guides"
+>
+  <Content />
+</ArticleLayout>

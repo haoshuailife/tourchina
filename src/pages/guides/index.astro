@@ -1,0 +1,107 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const guides = (await getCollection('guide')).sort(
+  (a, b) => a.data.title.localeCompare(b.data.title)
+);
+
+const site = Astro.site ?? new URL('https://chinanomadguide.com');
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Practical Guides for Nomads in China',
+  itemListElement: guides.map((g, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    url: new URL(`/guides/${g.slug}`, site).href,
+    name: g.data.title,
+  })),
+};
+---
+
+<BaseLayout
+  title="Practical Guides for Nomads in China | ChinaNomadGuide"
+  description="No-fluff guides to VPNs in China, eSIMs, WeChat Pay for foreigners, and China visas — the things you actually need before you fly."
+  jsonLd={jsonLd}
+>
+  <section class="container page">
+    <span class="eyebrow">Practical Guides</span>
+    <h1>The boring stuff that decides your trip</h1>
+    <p class="lead">
+      Get these four things right before you land and China becomes the easiest
+      place in Asia to nomad. Get them wrong and you'll spend a week firefighting.
+    </p>
+
+    <div class="grid">
+      {guides.map((g) => (
+        <a class="guide-card" href={`/guides/${g.slug}`}>
+          <span class="cat">{g.data.category}</span>
+          <h2>{g.data.title}</h2>
+          <p>{g.data.description}</p>
+          <span class="read-more">Read guide →</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <style>
+    .page {
+      padding: 3rem 1.5rem 4rem;
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .lead {
+      font-size: 1.1rem;
+      color: var(--ink-soft);
+      max-width: 640px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .guide-card {
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 1.75rem;
+      color: var(--ink);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .guide-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      text-decoration: none;
+    }
+    .cat {
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .guide-card h2 {
+      margin: 0.5rem 0 0.5rem;
+      font-size: 1.4rem;
+    }
+    .guide-card p {
+      color: var(--ink-soft);
+      font-size: 0.95rem;
+      flex-grow: 1;
+    }
+    .read-more {
+      color: var(--accent);
+      font-weight: 600;
+      margin-top: 1rem;
+    }
+  </style>
+</BaseLayout>

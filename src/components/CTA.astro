@@ -1,0 +1,65 @@
+---
+interface Props {
+  program?: string;
+  url?: string;
+  title?: string;
+  body?: string;
+  cta?: string;
+}
+
+const {
+  program = 'Partner',
+  url = '#',
+  title = 'Recommended for nomads in China',
+  body = 'We may earn a commission when you sign up — it keeps this site independent and ad-light.',
+  cta = 'Get it now',
+} = Astro.props;
+---
+
+<aside class="cta">
+  <div class="cta-inner">
+    <span class="badge">Affiliate · {program}</span>
+    <h3>{title}</h3>
+    <p>{body}</p>
+    <a class="btn" href={url} rel="sponsored nofollow noopener" target="_blank">
+      {cta} →
+    </a>
+  </div>
+</aside>
+
+<style>
+  .cta {
+    margin: 2.5rem 0;
+    padding: 1.5rem;
+    background: var(--accent-soft);
+    border: 1px solid #e3c9bf;
+    border-radius: 8px;
+  }
+  .badge {
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.7rem;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .cta h3 {
+    margin: 0.35rem 0 0.5rem;
+  }
+  .cta p {
+    margin: 0 0 1rem;
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+  }
+  .btn {
+    display: inline-block;
+    padding: 0.65rem 1.1rem;
+    background: var(--accent);
+    color: #fff !important;
+    border-radius: 4px;
+    font-weight: 600;
+    text-decoration: none !important;
+  }
+  .btn:hover {
+    opacity: 0.9;
+  }
+</style>

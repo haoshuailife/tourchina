@@ -1,17 +1,245 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const cities = (await getCollection('city')).sort(
+  (a, b) => a.data.region.localeCompare(b.data.region)
+);
+const guides = await getCollection('guide');
+
+const site = Astro.site ?? new URL('https://chinanomadguide.com');
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'ChinaNomadGuide',
+  url: site.href,
+  description:
+    'Practical guides for digital nomads living, working, and traveling in China.',
+};
 ---
-<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>游中国 · Tour China</title>
-    <meta name="description" content="中国旅游指南 — Tour China" />
-  </head>
-  <body>
-    <main>
-      <h1>游中国 · Tour China</h1>
-      <p>欢迎来到中国旅游指南，站点搭建中。</p>
-    </main>
-  </body>
-</html>
+
+<BaseLayout
+  title="ChinaNomadGuide — Digital Nomad Guides to China"
+  description="Practical, no-fluff guides for digital nomads in China. Cities, VPNs, eSIMs, WeChat Pay, visas — everything you need to live and work remotely in China."
+  jsonLd={jsonLd}
+>
+  <section class="hero">
+    <div class="container">
+      <span class="eyebrow">For digital nomads, by digital nomads</span>
+      <h1>Live and work in China<br /><em>without the chaos.</em></h1>
+      <p class="lead">
+        Practical guides on cities, VPNs, eSIMs, WeChat Pay, and visas — the
+        stuff you actually need before booking a flight.
+      </p>
+      <div class="cta-row">
+        <a class="btn primary" href="/cities">Browse city guides</a>
+        <a class="btn ghost" href="/guides">Read practical guides</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="container features">
+    <h2>Start here</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Find your city</h3>
+        <p>City-by-city breakdowns: rent, internet, coworking, neighborhood picks.</p>
+        <a href="/cities">See cities →</a>
+      </div>
+      <div class="card">
+        <h3>Get connected</h3>
+        <p>VPN, eSIM, WeChat Pay — set up before landing, not after.</p>
+        <a href="/guides/esim-china">Get online →</a>
+      </div>
+      <div class="card">
+        <h3>Sort your visa</h3>
+        <p>Visa-free, 240-hour transit, L visa — which one fits your trip?</p>
+        <a href="/guides/china-visa-guide">Visa options →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="container cities-preview">
+    <h2>City guides</h2>
+    <div class="city-grid">
+      {cities.map((c) => (
+        <a class="city-card" href={`/cities/${c.slug}`}>
+          <span class="region">{c.data.region}</span>
+          <h3>{c.data.title.replace('Digital Nomad Guide to ', '')}</h3>
+          <p>{c.data.description.slice(0, 110)}…</p>
+          <div class="scores">
+            <span>Internet {c.data.internetScore}/5</span>
+            <span>Nomad {c.data.nomadScore}/5</span>
+            <span>Cost {c.data.costIndex}/5</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="container guides-preview">
+    <h2>Practical guides</h2>
+    <div class="guide-list">
+      {guides.map((g) => (
+        <a class="guide-row" href={`/guides/${g.slug}`}>
+          <div>
+            <span class="cat">{g.data.category}</span>
+            <h3>{g.data.title}</h3>
+            <p>{g.data.description}</p>
+          </div>
+          <span class="arrow">→</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <style>
+    .hero {
+      background: linear-gradient(180deg, #f3efe6 0%, var(--bg) 100%);
+      border-bottom: 1px solid var(--line);
+      padding: 5rem 0 4rem;
+      text-align: center;
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .hero h1 {
+      margin: 0.5rem 0 1rem;
+    }
+    .hero h1 em {
+      color: var(--accent);
+      font-style: italic;
+      font-weight: 400;
+    }
+    .lead {
+      max-width: 640px;
+      margin: 0 auto 2rem;
+      font-size: 1.15rem;
+      color: var(--ink-soft);
+    }
+    .cta-row {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-block;
+      padding: 0.85rem 1.4rem;
+      border-radius: 4px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .btn.primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn.ghost {
+      border: 1px solid var(--ink);
+      color: var(--ink);
+    }
+    .features,
+    .cities-preview,
+    .guides-preview {
+      padding: 3rem 1.5rem;
+    }
+    .features h2,
+    .cities-preview h2,
+    .guides-preview h2 {
+      margin-top: 0;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 1.5rem;
+    }
+    .card h3 {
+      margin: 0 0 0.5rem;
+    }
+    .card a {
+      font-weight: 600;
+    }
+    .city-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+    .city-card {
+      display: block;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 1.5rem;
+      color: var(--ink);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .city-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+      text-decoration: none;
+    }
+    .region {
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .scores {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.75rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .guide-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .guide-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 1.5rem;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--ink);
+      transition: border-color 0.15s ease;
+    }
+    .guide-row:hover {
+      border-color: var(--accent);
+      text-decoration: none;
+    }
+    .guide-row h3 {
+      margin: 0.25rem 0 0.35rem;
+    }
+    .guide-row p {
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 0.95rem;
+    }
+    .cat {
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      font-weight: 600;
+    }
+    .arrow {
+      font-size: 1.4rem;
+      color: var(--muted);
+    }
+  </style>
+</BaseLayout>

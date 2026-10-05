@@ -1,11 +1,11 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
+import mdx from '@astrojs/mdx';
 
 // https://astro.build/config
 export default defineConfig({
-  // 部署到 GitHub Pages 时由 CI 注入完整域名（环境变量 SITE）
-  // 本地开发可留空；仅在 build 时影响绝对 URL / sitemap
-  site: process.env.SITE,
-  // 仓库名，作为 GitHub Pages 项目站点的子路径
-  base: 'tourchina',
+  // 自定义域名：构建时由 CI 注入，本地开发可留空
+  site: process.env.SITE || 'https://chinanomadguide.com',
+  integrations: [sitemap(), mdx()],
 });

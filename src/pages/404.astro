@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="404 — Not Found | ChinaNomadGuide"
+  description="Page not found."
+>
+  <section class="container not-found">
+    <span class="code">404</span>
+    <h1>This page wandered off the Great Wall.</h1>
+    <p>The page you're looking for doesn't exist or moved. Let's get you back.</p>
+    <div class="cta-row">
+      <a class="btn primary" href="/">Home</a>
+      <a class="btn ghost" href="/guides">Browse guides</a>
+    </div>
+  </section>
+
+  <style>
+    .not-found {
+      padding: 5rem 1.5rem;
+      text-align: center;
+      max-width: 600px;
+    }
+    .code {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+    .cta-row {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+    .btn {
+      display: inline-block;
+      padding: 0.85rem 1.4rem;
+      border-radius: 4px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .btn.primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn.ghost {
+      border: 1px solid var(--ink);
+      color: var(--ink);
+    }
+  </style>
+</BaseLayout>

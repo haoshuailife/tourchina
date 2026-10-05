@@ -1,0 +1,119 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const cities = (await getCollection('city')).sort((a, b) =>
+  a.data.title.localeCompare(b.data.title)
+);
+
+const site = Astro.site ?? new URL('https://chinanomadguide.com');
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Digital Nomad City Guides for China',
+  itemListElement: cities.map((c, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    url: new URL(`/cities/${c.slug}`, site).href,
+    name: c.data.title,
+  })),
+};
+---
+
+<BaseLayout
+  title="China City Guides for Digital Nomads | ChinaNomadGuide"
+  description="City-by-city guides for digital nomads in China: Beijing, Shanghai, Shenzhen, Chengdu. Rent, internet, coworking, neighborhoods, and cost of living."
+  jsonLd={jsonLd}
+>
+  <section class="container page">
+    <span class="eyebrow">Cities</span>
+    <h1>Where to base in China</h1>
+    <p class="lead">
+      Four cities, four flavors. Pick by visa rules, rent, internet speed, or
+      just gut feeling.
+    </p>
+
+    <div class="grid">
+      {cities.map((c) => (
+        <a class="city-card" href={`/cities/${c.slug}`}>
+          <span class="region">{c.data.region}</span>
+          <h2>{c.data.title.replace('Digital Nomad Guide to ', '')}</h2>
+          <p>{c.data.description}</p>
+          <div class="scores">
+            <span>🌐 Internet {c.data.internetScore}/5</span>
+            <span>🎒 Nomad {c.data.nomadScore}/5</span>
+            <span>💸 Cost {c.data.costIndex}/5</span>
+          </div>
+          <span class="read-more">Read guide →</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <style>
+    .page {
+      padding: 3rem 1.5rem 4rem;
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .lead {
+      font-size: 1.1rem;
+      color: var(--ink-soft);
+      max-width: 600px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .city-card {
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 1.75rem;
+      color: var(--ink);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .city-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      text-decoration: none;
+    }
+    .region {
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .city-card h2 {
+      margin: 0.35rem 0 0.5rem;
+      font-size: 1.6rem;
+    }
+    .city-card p {
+      color: var(--ink-soft);
+      font-size: 0.95rem;
+      flex-grow: 1;
+    }
+    .scores {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 1rem 0;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .read-more {
+      color: var(--accent);
+      font-weight: 600;
+    }
+  </style>
+</BaseLayout>

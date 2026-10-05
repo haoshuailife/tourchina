@@ -1,0 +1,195 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  publishedTime?: string;
+  modifiedTime?: string;
+  jsonLd?: object;
+}
+
+const {
+  title,
+  description = 'ChinaNomadGuide — Practical guides for digital nomads living, working, and traveling in China.',
+  image = '/og-default.svg',
+  type = 'website',
+  publishedTime,
+  modifiedTime,
+  jsonLd,
+} = Astro.props;
+
+const site = Astro.site ?? new URL('https://chinanomadguide.com');
+const canonical = new URL(Astro.url.pathname, site).href;
+const ogImage = new URL(image, site).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:site_name" content="ChinaNomadGuide" />
+    <meta property="og:locale" content="en_US" />
+    {publishedTime && <meta property="article:published_time" content={publishedTime} />}
+    {modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- RSS / sitemap hints -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    {jsonLd && (
+      <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    )}
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="container">
+        <a href="/" class="brand">ChinaNomadGuide</a>
+        <div class="nav-links">
+          <a href="/cities">Cities</a>
+          <a href="/guides">Guides</a>
+        </div>
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="container">
+        <p>
+          <strong>ChinaNomadGuide</strong> — Practical, no-fluff guides for
+          digital nomads in China.
+        </p>
+        <p class="muted">
+          Affiliate disclosure: some links earn us a small commission at no extra
+          cost to you. We only recommend services we believe add value to
+          nomads in China.
+        </p>
+      </div>
+    </footer>
+
+    <style is:global>
+      :root {
+        --ink: #1a1f2e;
+        --ink-soft: #3d4660;
+        --muted: #6b7390;
+        --bg: #fafaf7;
+        --line: #e6e3dc;
+        --accent: #c8553d;
+        --accent-soft: #f3e8e2;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          'Helvetica Neue', Arial, sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      h1,
+      h2,
+      h3 {
+        line-height: 1.2;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+      h1 {
+        font-size: clamp(2rem, 5vw, 3.25rem);
+      }
+      h2 {
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        margin-top: 2.5rem;
+        margin-bottom: 0.75rem;
+      }
+      h3 {
+        font-size: 1.2rem;
+        margin-top: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+      p {
+        margin: 0 0 1rem;
+      }
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+      }
+      .site-header {
+        background: var(--bg);
+        border-bottom: 1px solid var(--line);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+      .site-header nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      .brand {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--ink);
+      }
+      .nav-links a {
+        margin-left: 1.25rem;
+        color: var(--ink-soft);
+        font-weight: 500;
+      }
+      .site-footer {
+        margin-top: 4rem;
+        padding: 2rem 0;
+        border-top: 1px solid var(--line);
+        background: #fff;
+      }
+      .site-footer p {
+        margin: 0.25rem 0;
+        font-size: 0.9rem;
+      }
+      .muted {
+        color: var(--muted);
+        font-size: 0.8rem !important;
+        max-width: 720px;
+      }
+    </style>
+    <style>
+      main {
+        min-height: 60vh;
+      }
+    </style>
+  </body>
+</html>
